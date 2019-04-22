@@ -26,7 +26,7 @@ bandselection=function(X,kvec,n.cv,epsilon=10^(-4)){
   
   return(map(1:n.cv,function(x){set.seed(x);sample(1:n, size = n1, replace = FALSE)}) %>%
     map(tempfun) %>% do.call("rbind",.) %>% colMeans)
-  
+
   
   
 }
