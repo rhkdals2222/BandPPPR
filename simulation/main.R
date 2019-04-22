@@ -30,8 +30,8 @@ source("simulation/bandselection.R")
 bandres2=bandselection(datawt$X,kvec=1:10,n.cv=100,normtype = "2")
 bandresF=bandselection(datawt$X,kvec=1:10,n.cv=100,normtype = "F")
 
-plot(bandres$BPPP)
-plot(bandres$BandEST)
+plot(bandres2$BPPP)
+plot(bandres2$BandEST)
 
 plot(bandresF$BPPP)
 plot(bandresF$BandEST)

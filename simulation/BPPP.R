@@ -1,5 +1,7 @@
 library(CholWishart)
 library(plyr)
+library(RSpectra)
+
 bPPP=function(X,bandwidth,pn=1000,epsilon=10^(-4),df=p,A=diag(epsilon,p),adj=FALSE){
   
   p=dim(X)[2]
@@ -15,10 +17,10 @@ bPPP=function(X,bandwidth,pn=1000,epsilon=10^(-4),df=p,A=diag(epsilon,p),adj=FAL
   return(list(IW=psample,BPPP=pppsample))
 }
 
-adjust_pd=function(Sigma,epsilon=10^(-4),outlist=TRUE){
+adjust_pd=function(Sigma,epsilon=10^(-4),outlist=FALSE){
   p=dim(Sigma)[1]
   ##성능향상위해 필요한 부분
-  emin=min(eigen(Sigma)$values)
+  emin=eigs(Sigma,1,"SR")$values
   Sigmaa=Sigma+diag((emin<0)*(-emin+epsilon),p)
   if(!outlist){
     return(Sigmaa)
