@@ -12,7 +12,7 @@ bPPP=function(X,bandwidth,pn=1000,epsilon=10^(-4),df=p+1,A=diag(epsilon,p),adj=F
   }
   
   
-  return(list(psample,pppsample))
+  return(list(IW=psample,BPPP=pppsample))
 }
 
 adjust_pd=function(Sigma,epsilon=10^(-4),outlist=TRUE){
