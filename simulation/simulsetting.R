@@ -23,6 +23,3 @@ paramgen=function(p,k=NULL,alpha=0.1,rho=0.6,method="band",epsilon=10^(-4)){
   return(Sigma0)
   
 }
-
-system("pwd",intern = T)
-sys.frame(1)
