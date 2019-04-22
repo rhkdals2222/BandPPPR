@@ -8,9 +8,6 @@ bandselection=function(X,kvec,n.cv,epsilon=10^(-4)){
   nu0=p+1
   A0=diag(epsilon,p)
   
-  kvec=1:10
-  n.cv=10
-  
   tempfun=function(index){
     S1=t(X[index,])%*%X[index,]/n1
     S2=t(X[-index,])%*%X[-index,]/n2
