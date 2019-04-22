@@ -17,9 +17,10 @@ bandselection=function(X,kvec,n.cv,epsilon=10^(-4)){
     
     draw_all = alply(rInvWishart(piter,nu0+n1-1,A0+n1*S1),3)
     
-    tt=draw_all %>% 
-      map(function(sp){kvec %>% map(~banding(sp,k=.x)) %>% map_dbl(function(x){norm(x-S2,type="2")})})
-    return(c(colMeans(do.call("rbind",tt)),kvec %>% map(~banding(S1,k=.x)) %>% map_dbl(function(x){norm(x-S2,type="2")})))
+    return(c(
+      draw_all %>% 
+        map(function(sp){kvec %>% map(~banding(sp,k=.x)) %>% map_dbl(function(x){norm(x-S2,type="2")})}) %>% 
+        do.call("rbind",.) %>% colMeans,kvec %>% map(~banding(S1,k=.x)) %>% map_dbl(function(x){norm(x-S2,type="2")})))
     
   }
   
