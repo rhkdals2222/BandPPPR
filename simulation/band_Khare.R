@@ -2,7 +2,7 @@ library(MCMCpack)
 library(Rfast)
 library(bdsmatrix)
 library(purrr)
-
+library(FinCovRegularization)
 
 
 band_Khare=post_khare=function(X,bandwidth,pn=1000,keepchol=FALSE,U=diag(epsilon,p),epsilon=10^(-4),L=diag(1,p),D=diag(1,p),alpha=rep(1,p)){
@@ -15,11 +15,28 @@ band_Khare=post_khare=function(X,bandwidth,pn=1000,keepchol=FALSE,U=diag(epsilon
   Sigma=L%*%D%*%t(L)
   
   psamples=list()
+  
+  ##index matrix 만들기
+  
+  Lind=as.data.frame(lower.tri(matrix(1,p,p)) & banding(matrix(1,p,p),2))
+  
   for(it in 1:pn){
     Linv=forwardsolve(L, x = diag(ncol(L)))
     temp1=mat.mult(Linv,tild_U) ##L^{-1}*\tilde{U}
     temp2=mat.mult(temp1,backsolve(r = t(L), x = diag(ncol(t(L))))) ##L^{-1}*\tilde{U}*(L^{T})^{-1}
     temp3=spdinv(Sigma) ##(LDL^{T})^{-1}
+    
+    ##M_vG_inv 만들기
+    
+    Mv_G=map(1:(p-1),temp3[Lind[,.x],Lind[,.x]]*temp2[.x,.x]) %>% map(spdinv)
+    mu_uv=map(1:(p-1),temp1[.x,]/temp2[.x,.x])
+    #w반영하기 
+    
+    map2(mu_uv,Mv_G,rmvnorm(1,.x,.y))
+    
+    #reduce to L
+    
+    
     
     for(v in 1:(p-1)){
       mind=seq(from=(v+1),by=1,length=k)
@@ -60,10 +77,6 @@ band_Khare=post_khare=function(X,bandwidth,pn=1000,keepchol=FALSE,U=diag(epsilon
     }else{
       psamples[[it]]=Sigma
     }
-    
-    
-    
-    
   }
   return(psamples)
 }
