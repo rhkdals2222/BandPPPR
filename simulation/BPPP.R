@@ -1,6 +1,6 @@
 library(CholWishart)
 library(plyr)
-bPPP=function(X,bandwidth,pn=1000,epsilon=10^(-4),df=p+1,A=diag(epsilon,p),adj=FALSE){
+bPPP=function(X,bandwidth,pn=1000,epsilon=10^(-4),df=p,A=diag(epsilon,p),adj=FALSE){
   
   p=dim(X)[2]
   n=dim(X)[1]
