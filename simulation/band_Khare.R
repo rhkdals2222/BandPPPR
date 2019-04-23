@@ -11,23 +11,21 @@ band_Khare=function(X,bandwidth,pn=1000,keepchol=FALSE,U=diag(epsilon,p),epsilon
   k=bandwidth
   tild_U=t(X)%*%X+U
   tild_alpha=n+alpha
-  
-  Sigma=L%*%D%*%t(L)
-  
-  psamples=list()
-  
-  ##index matrix 만들기
-  
+  Ls=L*outer(rep(1,dim(D)[1]),sqrt(diag(D)))
   Lind=lower.tri(matrix(1,p,p)) & banding(matrix(1,p,p),k)
   Lindw1=!Lind & lower.tri(matrix(1,p,p))
+  
+  psamples=list()
   for(it in 1:pn){
     cat(it,"\n")
     Linv=forwardsolve(L, x = diag(ncol(L)))
     Lindw2=(t(Linv)==0)&upper.tri(matrix(1,p,p)) 
     
+    ##temp1,2에 대해 sparse곱임을 반영하여 속도 향상가능
     temp1=mat.mult(Linv,tild_U) ##L^{-1}*\tilde{U}
     temp2=mat.mult(temp1,backsolve(r = t(L), x = diag(ncol(t(L))))) ##L^{-1}*\tilde{U}*(L^{T})^{-1}
-    temp3=spdinv(Sigma) ##(LDL^{T})^{-1}
+    ##cholesky decomposition 된 값이기 때문에 행렬곱을 
+    temp3=chol2inv(t(Ls)) ##(LDL^{T})^{-1}
     
     
     ##M_vG 만들기
@@ -47,14 +45,12 @@ band_Khare=function(X,bandwidth,pn=1000,keepchol=FALSE,U=diag(epsilon,p),epsilon
 
     ##D matrix
     D=diag(map2_dbl(tild_alpha/2-1,diag(temp2)/2,~rinvgamma(1,shape=.x,scale=.y)))
+    Ls=L*outer(rep(1,dim(D)[1]),sqrt(diag(D)))
     
-    Sigma=mat.mult(L*outer(rep(1,dim(D)[1]),diag(D)), t(L)) ##L%*%D%*%t(L)
-    
-    #Sigma=L%*%D%*%t(L)
     if(keepchol){
-      psamples[[it]]=list(L=L,D=D,Sigma=Sigma)
+      psamples[[it]]=list(L=L,D=D,Sigma=mat.mult(Ls,t(Ls)))
     }else{
-      psamples[[it]]=Sigma
+      psamples[[it]]=mat.mult(Ls,t(Ls))
     }
   }
   return(psamples)
