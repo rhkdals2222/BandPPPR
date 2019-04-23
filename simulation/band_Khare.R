@@ -17,7 +17,7 @@ band_Khare=function(X,bandwidth,pn=1000,keepchol=FALSE,U=diag(epsilon,p),epsilon
   
   psamples=list()
   for(it in 1:pn){
-    cat(it,"\n")
+    #cat(it,"\n")
     Linv=forwardsolve(L, x = diag(ncol(L)))
     Lindw2=(t(Linv)==0)&upper.tri(matrix(1,p,p)) 
     
