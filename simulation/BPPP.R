@@ -1,19 +1,19 @@
+##밴드 사후처리 
+
 library(CholWishart)
 library(plyr)
 library(RSpectra)
+library(purrr)
 
 bPPP=function(X,bandwidth,pn=1000,epsilon=10^(-4),df=p,A=diag(epsilon,p),adj=FALSE){
-  
   p=dim(X)[2]
   n=dim(X)[1]
   k=bandwidth
   psample=alply(rInvWishart(pn, n+df, t(X)%*%X + A),3)
   pppsample=lapply(psample,function(x){banding(x,k);})
   if(adj){
-    pppsample=lapply(pppsample,function(x){adjust_pd(x,outlist=FALSE);})  
+    pppsample=map(pppsample,adjust_pd)  
   }
-  
-  
   return(list(IW=psample,BPPP=pppsample))
 }
 
