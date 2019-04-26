@@ -5,12 +5,15 @@ library(CholWishart)
 library(plyr)
 library(RSpectra)
 
-source("simulation/BPPP.R") ## adjust를 만들기 위한것
 
-cv.BPPP=function(X,kvec,n.cv,epsilon=10^(-4),nu0=p,A0=diag(epsilon,p),normtype="F",filename=NULL){
+cv.BPPP=function(X,kvec,n.cv,piter=1000,epsilon=10^(-4),nu0=p,A0=diag(epsilon,p),normtype="F",wd,dir,filename=NULL){
   n <- dim(X)[1]
+  p=dim(X)[2]
   n1 <- ceiling(n*(1 - 1/log(n)))
   n2 <- floor(n/log(n))
+  
+  source(paste0(wd,"/BPPP.R"))
+  
   
   tempfun=function(index){
     S2=mat.mult(t(X[-index,]),X[-index,])/n2
@@ -23,7 +26,7 @@ cv.BPPP=function(X,kvec,n.cv,epsilon=10^(-4),nu0=p,A0=diag(epsilon,p),normtype="
            map(tempfun) %>% do.call("rbind",.) %>% colMeans
   
   if(!is.null(filename)){
-    saveRDS(res,file = filename)  
+    saveRDS(res,file = paste(wd,dir,filename,sep = "/"))  
   }else{
     return(res)  
   }
