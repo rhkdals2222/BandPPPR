@@ -2,15 +2,17 @@
 library(rslurm)
 
 ##datagen
-source("simulation/simulsetting.R")
+source(paste0(getwd(),"/simulsetting.R"))
 
-n=20
-p=20
+n=100
+p=100
 k=5
-#X_list=
-data=simulsetting(n=n,p=p,k=k)
-
-source("simulation/cv.bandEST.R")
-
-sjob<- slurm_call(cv.BPPP, list(X=data$X,kvec=1:15,filename=paste0("cvres",1,".rds")))
+siter=25
+X_list=list()
+for(i in 1:siter){
+  data=simulsetting(n=n,p=p,k=k)
+  X_list[[i]]=data$X
+  source(paste0(getwd(),"/cv.BPPP.R"))
+  sjob<- slurm_call(cv.BPPP, list(X=data$X,kvec=1:15,n.cv=100,filename=paste0("cvres",i,".rds"),normtype="2",wd=getwd(),dir="test"))
+}
 
